@@ -11,29 +11,47 @@ clean:
 
 .PHONY: activate
 activate:
-	conda activate $(PROJECT_NAME)
+	conda activate aiohttp_example
 
-.PHONY: create
-create:
+.PHONY: create_venv
+create_venv:
 	conda env create -f environment.yml
 
-.PHONY: update
-update:
-	pip-compile requirements.in --output-file requirements.txt
-	pip-compile dev-requirements.in --output-file dev-requirements.txt
-
-.PHONY: update_env_yml
-update_env_yml:
+.PHONY: init_yml
+init_yml:
 	conda env export --from-history -f environment.yml
 
-.PHONY: update_env
-update_env:
+.PHONY: update_venv
+update_venv:
 	conda env update --file environment.yml
 
-.PHONY: delete_env
-delete_env:
+.PHONY: delete_venv
+delete_venv:
 	conda env remove -n $(PROJECT_NAME)
+
 
 .PHONY: test
 test:
 	pytest tests/*
+
+
+.PHONY: install
+install:
+	pip install -r dev-requirements.txt
+
+.PHONY: update
+update: rm_txt update_txt sync
+
+.PHONY: update_txt
+update_txt:
+	pip-compile requirements.in --output-file requirements.txt
+	pip-compile dev-requirements.in --output-file dev-requirements.txt
+
+.PHONY: rm_txt
+rm_txt:
+	rm -rf requirements.txt dev-requirements.txt
+
+.PHONY: sync
+sync:
+	pip-sync dev-requirements.txt
+
